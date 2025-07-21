@@ -1,0 +1,24 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attribution {
+  position: absolute;
+  bottom: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.attribution a {
+  color: var(--blue);
+}
