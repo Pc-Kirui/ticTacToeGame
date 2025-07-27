@@ -29,7 +29,24 @@ function Gameboard() {
     return true;
   };
 
-  return { getBoard, placeMark };
+  const printBoard = () => {
+    const boardValues = board.map((row) =>
+      row.map((cell) => {
+        const value = cell.getValue();
+        return value === "" ? " " : value;
+      })
+    );
+
+    console.log(`-------------`);
+    for (let i = 0; i < 3; i++) {
+      console.log(
+        `| ${boardValues[i][0]} | ${boardValues[i][1]} | ${boardValues[i][2]} |`
+      );
+      console.log(`-------------`);
+    }
+  };
+
+  return { getBoard, placeMark, printBoard };
 }
 
 function Cell() {
@@ -44,4 +61,4 @@ function Cell() {
   return { addMark, getValue };
 }
 
-Gameboard();
+const myGame = Gameboard();
