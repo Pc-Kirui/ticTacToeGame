@@ -124,6 +124,9 @@ function GameController(
 
   let activePlayer = players[0];
   let movesMade = 0;
+  let gameOver = false;
+
+  const getGameOverStatus = () => gameOver;
 
   const getActivePlayer = () => activePlayer;
 
@@ -167,6 +170,11 @@ function GameController(
   };
 
   const playRound = (row, column) => {
+    if (gameOver) {
+      console.log("Game is already over!");
+      return;
+    }
+
     console.log(
       `${getActivePlayer().name} ${
         getActivePlayer().mark
@@ -184,11 +192,13 @@ function GameController(
             getActivePlayer().mark
           } wins the game. Congratulations`
         );
+        gameOver = true;
         return;
       }
       if (checkDraw()) {
         board.printBoard();
         console.log(`\nIt's a draw! No more moves possible.`);
+        gameOver = true;
         return;
       }
       switchPlayerTurn();
@@ -199,7 +209,72 @@ function GameController(
     }
   };
   printNewRound();
-  return { playRound, getActivePlayer, getBoard: board.getBoard };
+  return {
+    playRound,
+    getActivePlayer,
+    getBoard: board.getBoard,
+    getGameOverStatus,
+  };
 }
-// const myGame = Gameboard();
-const game = GameController();
+
+function ScreenController() {
+  const game = GameController();
+
+  const turnDiv = document.querySelector(".turn");
+  const boardDiv = document.querySelector(".board");
+
+  const updateScreen = () => {
+    boardDiv.textContent = "";
+
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
+
+    if (game.getGameOverStatus()) {
+      const boardCells = board.flat();
+      const filledCells = boardCells.filter((cell) => cell.getValue() != "");
+
+      if (filledCells === 9) {
+        turnDiv.textContent = "It's a Draw";
+      } else {
+        turnDiv.textContent = `${activePlayer.name} wins!`;
+      }
+    } else {
+      turnDiv.textContent = `${activePlayer.name}'s turn...`;
+    }
+
+    turnDiv.textContent = `${activePlayer.name}'s turn...`;
+
+    board.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        const cellButton = document.createElement("button");
+        cellButton.classList.add("cell");
+        cellButton.dataset.row = rowIndex;
+        cellButton.dataset.column = colIndex;
+        cellButton.textContent = cell.getValue();
+        boardDiv.appendChild(cellButton);
+      });
+    });
+  };
+
+  const clickHandlerBoard = (e) => {
+    if (game.getGameOverStatus()) {
+      console.log("Game is Over. No more moves allowed.");
+      return;
+    }
+
+    const selectedRow = e.target.dataset.row;
+    const selectedCol = e.target.dataset.column;
+
+    console.log(selectedRow, selectedCol);
+
+    if (!selectedRow || !selectedCol) return;
+
+    game.playRound(selectedRow, selectedCol);
+    updateScreen();
+  };
+
+  boardDiv.addEventListener("click", clickHandlerBoard);
+
+  updateScreen();
+}
+ScreenController();
