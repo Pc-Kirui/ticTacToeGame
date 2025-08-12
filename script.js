@@ -69,7 +69,7 @@ function GameController(
   playerOneName = "Player One",
   playerTwoName = "Player Two"
 ) {
-  const board = Gameboard();
+  let board = Gameboard();
 
   const players = [
     { name: playerOneName, mark: "X" },
@@ -125,10 +125,13 @@ function GameController(
   let activePlayer = players[0];
   let movesMade = 0;
   let gameOver = false;
+  let winner = "";
 
   const getGameOverStatus = () => gameOver;
 
   const getActivePlayer = () => activePlayer;
+
+  const getWinner = () => winner;
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -169,6 +172,17 @@ function GameController(
     return movesMade === 9 && !checkWin();
   };
 
+  const restart = () => {
+    board = Gameboard();
+    activePlayer = players[0];
+    movesMade = 0;
+    gameOver = false;
+    winner = "";
+    printNewRound();
+  };
+
+  const getBoard = () => board.getBoard();
+
   const playRound = (row, column) => {
     if (gameOver) {
       console.log("Game is already over!");
@@ -192,6 +206,7 @@ function GameController(
             getActivePlayer().mark
           } wins the game. Congratulations`
         );
+        winner = getActivePlayer().name;
         gameOver = true;
         return;
       }
@@ -212,8 +227,10 @@ function GameController(
   return {
     playRound,
     getActivePlayer,
-    getBoard: board.getBoard,
+    getBoard,
     getGameOverStatus,
+    getWinner,
+    restart,
   };
 }
 
@@ -222,27 +239,28 @@ function ScreenController() {
 
   const turnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+  const restartButton = document.querySelector(".restartBtn");
 
   const updateScreen = () => {
     boardDiv.textContent = "";
 
     const board = game.getBoard();
     const activePlayer = game.getActivePlayer();
+    const winner = game.getWinner();
 
     if (game.getGameOverStatus()) {
-      const boardCells = board.flat();
-      const filledCells = boardCells.filter((cell) => cell.getValue() != "");
+      const isDraw = board.flat().every((cell) => cell.getValue() !== "");
 
-      if (filledCells === 9) {
+      if (isDraw) {
         turnDiv.textContent = "It's a Draw";
       } else {
-        turnDiv.textContent = `${activePlayer.name} wins!`;
+        turnDiv.textContent = `${winner} wins!`;
       }
+      restartButton.style.display = "block";
     } else {
       turnDiv.textContent = `${activePlayer.name}'s turn...`;
+      restartButton.style.display = "none";
     }
-
-    turnDiv.textContent = `${activePlayer.name}'s turn...`;
 
     board.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
@@ -272,6 +290,11 @@ function ScreenController() {
     game.playRound(selectedRow, selectedCol);
     updateScreen();
   };
+
+  restartButton.addEventListener("click", () => {
+    game.restart();
+    updateScreen();
+  });
 
   boardDiv.addEventListener("click", clickHandlerBoard);
 
