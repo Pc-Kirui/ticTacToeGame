@@ -151,17 +151,11 @@ function GameController(
     const activeMark = activePlayer.mark;
 
     for (const combo of winningCombos) {
-      const [cell1Coords, cell2Coords, cell3Coords] = combo;
-
-      const cell1 = currentBoard[cell1Coords[0]][cell1Coords[1]];
-      const cell2 = currentBoard[cell2Coords[0]][cell2Coords[1]];
-      const cell3 = currentBoard[cell3Coords[0]][cell3Coords[1]];
-
-      const val1 = cell1.getValue();
-      const val2 = cell2.getValue();
-      const val3 = cell3.getValue();
-
-      if (val1 === activeMark && val2 === activeMark && val3 === activeMark) {
+      if (
+        currentBoard[combo[0][0]][combo[0][1]].getValue() === activeMark &&
+        currentBoard[combo[1][0]][combo[1][1]].getValue() === activeMark &&
+        currentBoard[combo[2][0]][combo[2][1]].getValue() === activeMark
+      ) {
         return true;
       }
     }
@@ -189,11 +183,6 @@ function GameController(
       return;
     }
 
-    console.log(
-      `${getActivePlayer().name} ${
-        getActivePlayer().mark
-      } attempts to place mark at  row ${row}, column ${column}...`
-    );
     const moveSuccessful = board.placeMark(row, column, getActivePlayer().mark);
 
     if (moveSuccessful) {
@@ -249,12 +238,12 @@ function ScreenController() {
     const winner = game.getWinner();
 
     if (game.getGameOverStatus()) {
-      const isDraw = board.flat().every((cell) => cell.getValue() !== "");
+      const winner = game.getWinner();
 
-      if (isDraw) {
-        turnDiv.textContent = "It's a Draw";
-      } else {
+      if (winner) {
         turnDiv.textContent = `${winner} wins!`;
+      } else {
+        turnDiv.textContent = "It's a Draw.";
       }
       restartButton.style.display = "block";
     } else {
@@ -280,12 +269,10 @@ function ScreenController() {
       return;
     }
 
-    const selectedRow = e.target.dataset.row;
-    const selectedCol = e.target.dataset.column;
+    const selectedRow = parseInt(e.target.dataset.row);
+    const selectedCol = parseInt(e.target.dataset.column);
 
-    console.log(selectedRow, selectedCol);
-
-    if (!selectedRow || !selectedCol) return;
+    if (isNaN(selectedRow) || isNaN(selectedCol)) return;
 
     game.playRound(selectedRow, selectedCol);
     updateScreen();
