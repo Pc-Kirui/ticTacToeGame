@@ -1,5 +1,11 @@
 "use strict";
 
+const playerOneInput = document.getElementById("playerOneName");
+const playerTwoInput = document.getElementById("playerTwoName");
+const startGameBtn = document.querySelector(".startGameBtn");
+const gameContainer = document.querySelector(".game-container");
+const formContainer = document.querySelector(".player-name-form");
+
 //Creating and managing the 3*3 board or grid of cells
 
 function Gameboard() {
@@ -72,9 +78,9 @@ function GameController(
   let board = Gameboard();
 
   const players = [
-    { name: playerOneName, mark: "X" },
+    { name: playerOneName || "Player One", mark: "X" },
     {
-      name: playerTwoName,
+      name: playerTwoName || "Player Two",
       mark: "O",
     },
   ];
@@ -223,9 +229,7 @@ function GameController(
   };
 }
 
-function ScreenController() {
-  const game = GameController();
-
+function ScreenController(game) {
   const turnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
   const restartButton = document.querySelector(".restartBtn");
@@ -287,4 +291,24 @@ function ScreenController() {
 
   updateScreen();
 }
+
+function startGame() {
+  const playerOneName = playerOneInput.value.trim();
+  const playerTwoName = playerTwoInput.value.trim();
+
+  if (!playerOneName || !playerTwoName) {
+    alert("Please enter names for both players to start the game.");
+    return;
+  }
+
+  const game = GameController(playerOneName, playerTwoName);
+
+  formContainer.style.display = "none";
+  gameContainer.style.display = "flex";
+
+  ScreenController(game);
+}
+
+startGameBtn.addEventListener("click", startGame);
+
 ScreenController();

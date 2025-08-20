@@ -24,7 +24,19 @@
     </header>
 
     <main>
-      <div class="container">
+      <div class="player-name-form">
+        <h2>Enter Player Names</h2>
+        <div class="input-group">
+          <label for="playerOneName">Player 1 (X):</label>
+          <input type="text" id="playerOneName" placeholder="Player One" />
+        </div>
+        <div class="input-group">
+          <label for="playerTwoName">Player 2 (O):</label>
+          <input type="text" id="playerTwoName" placeholder="Player Two" />
+        </div>
+        <button class="startGameBtn">Start Game</button>
+      </div>
+      <div class="container game-container" style="display: none">
         <div class="turn"></div>
         <div class="board"></div>
         <button class="restartBtn" aria-label="Restart Game">
